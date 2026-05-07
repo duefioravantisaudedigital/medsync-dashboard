@@ -53,14 +53,26 @@ const HistoricoPage = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Histórico de Atividade</h1>
-        <p className="text-gray-500 mt-1">Últimas 50 sincronizações do seu robô.</p>
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
+      <div className="flex justify-between items-end">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Histórico de Atividade</h1>
+          <p className="text-gray-500 mt-1">Últimas 50 sincronizações do seu robô.</p>
+        </div>
+        <button 
+          onClick={fetchHistorico}
+          className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all active:scale-95 shadow-sm"
+        >
+          <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+          Atualizar Lista
+        </button>
       </div>
 
-      {loading ? (
-        <div className="text-center text-gray-400 py-12 animate-pulse">Carregando histórico...</div>
+      {loading && logs.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-4">
+          <RefreshCw size={32} className="animate-spin text-emerald-500" />
+          <p className="text-sm font-medium">Buscando atividades recentes...</p>
+        </div>
       ) : logs.length === 0 ? (
         <div className="text-center py-12">
           <History className="mx-auto mb-4 text-gray-300" size={48} />
