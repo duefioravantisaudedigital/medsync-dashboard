@@ -21,6 +21,7 @@ interface AdminUser {
   is_active: boolean;
   is_admin: boolean;
   expires_at: string | null;
+  plan_type: string;
 }
 
 export default function AdminPage() {
@@ -49,7 +50,7 @@ export default function AdminPage() {
   }
 
   async function handleRenew(userId: number) {
-    if (!confirm('Deseja renovar a licença por +30 dias?')) return;
+    if (!confirm('Deseja renovar a licença por +30 dias? (Isso mudará o plano para PRO)')) return;
     
     setActionId(userId);
     try {
@@ -121,13 +122,14 @@ export default function AdminPage() {
             <tbody className="divide-y divide-gray-50">
               {users.map((u) => {
                 const isExpired = u.expires_at && new Date(u.expires_at) < new Date();
+                const isTrial = u.plan_type === 'trial';
                 const isProcessing = actionId === u.id;
 
                 return (
                   <tr key={u.id} className="hover:bg-gray-50/30 transition-colors group">
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center font-bold text-sm">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${isTrial ? 'bg-orange-100 text-orange-700' : 'bg-emerald-100 text-emerald-700'}`}>
                           {u.nome.charAt(0)}
                         </div>
                         <div>
@@ -141,11 +143,16 @@ export default function AdminPage() {
                     <td className="px-8 py-6">
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          {u.is_active ? (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
-                              <ShieldCheck size={12} /> CONTA ATIVA
+                          {isTrial ? (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-orange-50 text-orange-600 border border-orange-100">
+                              <Zap size={12} /> PERÍODO DE TESTE
                             </span>
                           ) : (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
+                              <ShieldCheck size={12} /> PLANO PRO
+                            </span>
+                          )}
+                          {!u.is_active && (
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-red-50 text-red-600 border border-red-100">
                               <ShieldAlert size={12} /> CONTA SUSPENSA
                             </span>
