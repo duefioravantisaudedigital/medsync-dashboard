@@ -1,3 +1,6 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import { Clock, CheckCircle2, AlertCircle, History, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { API_BASE_URL, getAuthHeaders } from '@/lib/api';
 
