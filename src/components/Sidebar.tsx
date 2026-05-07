@@ -35,6 +35,10 @@ const Sidebar = () => {
     { icon: <History size={20} />, label: 'Histórico', href: '/historico' },
   ];
 
+  if (user?.is_admin) {
+    menuItems.push({ icon: <Settings size={20} />, label: 'Painel Admin', href: '/admin' });
+  }
+
   const secondaryItems = [
     { icon: <Settings size={20} />, label: 'Ajustes', href: '/ajustes' },
     { icon: <LifeBuoy size={20} />, label: 'Suporte', href: '/suporte' },
