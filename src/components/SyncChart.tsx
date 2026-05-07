@@ -58,5 +58,3 @@ const SyncChart = ({ data = [] }: SyncChartProps) => {
 };
 
 export default SyncChart;
-
-export default SyncChart;
