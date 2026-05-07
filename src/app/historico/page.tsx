@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Clock, CheckCircle2, AlertCircle, History } from 'lucide-react';
+import { Clock, CheckCircle2, AlertCircle, History, RefreshCw } from 'lucide-react';
 import { API_BASE_URL, getAuthHeaders } from '@/lib/api';
 
 interface LogData {
@@ -15,22 +15,24 @@ const HistoricoPage = () => {
   const [logs, setLogs] = useState<LogData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchLogs() {
-      try {
-        const resp = await fetch(`${API_BASE_URL}/dashboard/historico`, {
-          headers: getAuthHeaders()
-        });
-        if (resp.ok) {
-          const data = await resp.json();
-          setLogs(data.historico);
-        }
-      } catch (err) {
-        console.error('Erro ao buscar histórico:', err);
-      } finally {
-        setLoading(false);
+  async function fetchLogs() {
+    setLoading(true);
+    try {
+      const resp = await fetch(`${API_BASE_URL}/dashboard/historico`, {
+        headers: getAuthHeaders()
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        setLogs(data.historico);
       }
+    } catch (err) {
+      console.error('Erro ao buscar histórico:', err);
+    } finally {
+      setLoading(false);
     }
+  }
+
+  useEffect(() => {
     fetchLogs();
   }, []);
 
@@ -60,7 +62,7 @@ const HistoricoPage = () => {
           <p className="text-gray-500 mt-1">Últimas 50 sincronizações do seu robô.</p>
         </div>
         <button 
-          onClick={fetchHistorico}
+          onClick={fetchLogs}
           className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all active:scale-95 shadow-sm"
         >
           <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
