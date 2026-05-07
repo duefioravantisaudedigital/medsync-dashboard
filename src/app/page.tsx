@@ -16,7 +16,7 @@ import {
 interface DashboardStats {
   processados_mes: number;
   total_pacientes: number;
-  taxa_sucesso: number;
+  tempo_economizado_minutos: number;
   total_erros: number;
   nome: string;
   crm: string;
@@ -26,31 +26,39 @@ interface DashboardStats {
 
 export default function Home() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [chartData, setChartData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchStats() {
+    async function fetchData() {
       try {
-        const resp = await fetch(`${API_BASE_URL}/dashboard/stats`, {
-          headers: getAuthHeaders()
-        });
-        if (resp.ok) {
-          const data = await resp.json();
-          setStats(data);
-        }
+        const [statsResp, chartResp] = await Promise.all([
+          fetch(`${API_BASE_URL}/dashboard/stats`, { headers: getAuthHeaders() }),
+          fetch(`${API_BASE_URL}/dashboard/grafico`, { headers: getAuthHeaders() })
+        ]);
+        
+        if (statsResp.ok) setStats(await statsResp.json());
+        if (chartResp.ok) setChartData(await chartResp.json());
       } catch (err) {
-        console.error('Erro ao buscar stats:', err);
+        console.error('Erro ao buscar dados:', err);
       } finally {
         setLoading(false);
       }
     }
-    fetchStats();
+    fetchData();
   }, []);
+
+  const formatTime = (minutes: number) => {
+    if (minutes < 60) return `${Math.round(minutes)}min`;
+    const hours = Math.floor(minutes / 60);
+    const mins = Math.round(minutes % 60);
+    return `${hours}h ${mins}min`;
+  };
 
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto flex items-center justify-center h-96">
-        <div className="text-gray-400 text-lg animate-pulse">Carregando dados...</div>
+        <div className="text-gray-400 text-lg animate-pulse">Carregando dados reais...</div>
       </div>
     );
   }
@@ -84,11 +92,11 @@ export default function Home() {
           icon={<UserPlus size={20} />}
         />
         <MetricCard 
-          title="Taxa de Sucesso" 
-          value={`${stats?.taxa_sucesso ?? 0}%`} 
-          subValue={`${stats?.total_erros ?? 0} erros este mês`} 
-          isPositive={(stats?.taxa_sucesso ?? 0) > 90}
-          icon={<CheckCircle2 size={20} />}
+          title="Tempo Economizado" 
+          value={formatTime(stats?.tempo_economizado_minutos ?? 0)} 
+          subValue="total de tempo poupado" 
+          isPositive={true}
+          icon={<Clock size={20} />}
         />
         <MetricCard 
           title="Assinatura" 
@@ -104,7 +112,7 @@ export default function Home() {
       {/* Chart + Highlights */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <SyncChart />
+          <SyncChart data={chartData} />
         </div>
 
         {/* Highlights Section */}
@@ -125,11 +133,11 @@ export default function Home() {
 
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
-                  <CheckCircle2 size={20} />
+                  <Clock size={20} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">{stats?.taxa_sucesso ?? 0}% de sucesso</p>
-                  <p className="text-xs text-gray-500">{stats?.total_erros ?? 0} erros de sincronização</p>
+                  <p className="text-sm font-semibold text-gray-900">{formatTime(stats?.tempo_economizado_minutos ?? 0)} economizados</p>
+                  <p className="text-xs text-gray-500">pelo assistente MedSync</p>
                 </div>
               </div>
 

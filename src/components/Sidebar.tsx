@@ -15,9 +15,12 @@ import {
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
+import { getUser } from '@/lib/api';
+
 const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const user = getUser();
 
   const handleLogout = () => {
     Cookies.remove('medsync_token');
@@ -36,6 +39,10 @@ const Sidebar = () => {
     { icon: <Settings size={20} />, label: 'Ajustes', href: '/ajustes' },
     { icon: <LifeBuoy size={20} />, label: 'Suporte', href: '/suporte' },
   ];
+
+  const expirationDate = user?.expires_at 
+    ? new Date(user.expires_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+    : 'N/A';
 
   return (
     <div className="w-64 bg-[#064e3b] h-screen flex flex-col text-white p-6 fixed left-0 top-0">
@@ -96,7 +103,7 @@ const Sidebar = () => {
           <div className="flex justify-between items-start mb-2">
             <div>
               <p className="text-[10px] text-emerald-100/50 uppercase tracking-wider font-bold">Plano Pro - ativo</p>
-              <p className="text-sm font-semibold">Expira 31/05</p>
+              <p className="text-sm font-semibold">Expira {expirationDate}</p>
             </div>
           </div>
           <div className="w-full bg-white/10 h-1.5 rounded-full mb-4">
