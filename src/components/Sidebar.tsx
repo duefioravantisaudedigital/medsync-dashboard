@@ -11,7 +11,8 @@ import {
   Settings, 
   LifeBuoy,
   Zap,
-  LogOut
+  LogOut,
+  MessageSquare
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
@@ -31,6 +32,7 @@ const Sidebar = () => {
   const menuItems = [
     { icon: <LayoutDashboard size={20} />, label: 'Início', href: '/' },
     { icon: <Users size={20} />, label: 'Pacientes', href: '/pacientes' },
+    { icon: <MessageSquare size={20} />, label: 'Mensagens', href: '/mensagens' },
     { icon: <FileBarChart size={20} />, label: 'Relatórios', href: '/relatorios' },
     { icon: <History size={20} />, label: 'Histórico', href: '/historico' },
   ];
