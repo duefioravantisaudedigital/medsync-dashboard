@@ -54,8 +54,17 @@ const MensagensPage = () => {
     }
 
     const doctorName = user?.nome || 'Médico';
-    const cleanPhone = consulta.telefone.replace(/\D/g, '');
-    const phoneWithCountry = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+    let cleanPhone = consulta.telefone.replace(/\D/g, '');
+    
+    // Remove o 55 se já veio do banco para normalizar
+    if (cleanPhone.startsWith('55')) cleanPhone = cleanPhone.slice(2);
+    
+    // Se tem 10 dígitos (DDD + 8), adiciona o 9 depois do DDD
+    if (cleanPhone.length === 10) {
+      cleanPhone = cleanPhone.slice(0, 2) + '9' + cleanPhone.slice(2);
+    }
+    
+    const phoneWithCountry = `55${cleanPhone}`;
     
     const message = `Olá, *${consulta.paciente}*! Tudo bem? Aqui é da clínica do *Dr(a). ${doctorName}*. Confirmamos sua consulta hoje às *${consulta.horario}*? Aguardamos sua resposta!`;
     
