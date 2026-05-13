@@ -10,11 +10,16 @@ import {
   Clock, 
   Calendar,
   CheckCircle2,
-  Zap
+  Zap,
+  CalendarCheck
 } from 'lucide-react';
 
 interface DashboardStats {
+  processados: number;
   processados_mes: number;
+  consultas_hoje: number;
+  periodo: string;
+  label_periodo: string;
   total_pacientes: number;
   tempo_economizado_minutos: number;
   total_erros: number;
@@ -24,16 +29,35 @@ interface DashboardStats {
   subscription_expires_at: string | null;
 }
 
+type Periodo = 'dia' | 'semana' | 'mes' | 'ano';
+
+const periodoLabels: Record<Periodo, string> = {
+  dia: 'Hoje',
+  semana: 'Semana',
+  mes: 'Mês',
+  ano: 'Ano',
+};
+
 export default function Home() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [chartData, setChartData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [periodo, setPeriodo] = useState<Periodo>('mes');
+
+  async function fetchStats(p: Periodo) {
+    try {
+      const resp = await fetch(`${API_BASE_URL}/dashboard/stats?periodo=${p}`, { headers: getAuthHeaders() });
+      if (resp.ok) setStats(await resp.json());
+    } catch (err) {
+      console.error('Erro ao buscar stats:', err);
+    }
+  }
 
   useEffect(() => {
     async function fetchData() {
       try {
         const [statsResp, chartResp] = await Promise.all([
-          fetch(`${API_BASE_URL}/dashboard/stats`, { headers: getAuthHeaders() }),
+          fetch(`${API_BASE_URL}/dashboard/stats?periodo=${periodo}`, { headers: getAuthHeaders() }),
           fetch(`${API_BASE_URL}/dashboard/grafico`, { headers: getAuthHeaders() })
         ]);
         
@@ -47,6 +71,11 @@ export default function Home() {
     }
     fetchData();
   }, []);
+
+  const handlePeriodoChange = (p: Periodo) => {
+    setPeriodo(p);
+    fetchStats(p);
+  };
 
   const formatTime = (minutes: number) => {
     if (minutes < 60) return `${Math.round(minutes)}min`;
@@ -75,14 +104,39 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Filtro de Período */}
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-gray-500 font-medium mr-1">Período:</span>
+        {(Object.keys(periodoLabels) as Periodo[]).map((p) => (
+          <button
+            key={p}
+            onClick={() => handlePeriodoChange(p)}
+            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+              periodo === p
+                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200'
+                : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50 hover:text-gray-700'
+            }`}
+          >
+            {periodoLabels[p]}
+          </button>
+        ))}
+      </div>
+
       {/* Metric Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <MetricCard 
-          title="Processados (mês)" 
-          value={String(stats?.processados_mes ?? 0)} 
-          subValue="sincronizações neste mês" 
+          title={`Processados (${periodoLabels[periodo].toLowerCase()})`}
+          value={String(stats?.processados ?? 0)} 
+          subValue={`sincronizações ${stats?.label_periodo ?? 'neste mês'}`}
           isPositive={true}
           icon={<Users size={20} />}
+        />
+        <MetricCard 
+          title="Consultas Hoje" 
+          value={String(stats?.consultas_hoje ?? 0)} 
+          subValue="agendadas para hoje" 
+          isPositive={true}
+          icon={<CalendarCheck size={20} />}
         />
         <MetricCard 
           title="Pacientes Únicos" 
@@ -126,8 +180,18 @@ export default function Home() {
                   <Users size={20} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">{stats?.processados_mes ?? 0} sincronizações</p>
-                  <p className="text-xs text-gray-500">processadas neste mês</p>
+                  <p className="text-sm font-semibold text-gray-900">{stats?.processados ?? 0} sincronizações</p>
+                  <p className="text-xs text-gray-500">processadas {stats?.label_periodo ?? 'neste mês'}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-violet-50 text-violet-600 rounded-2xl">
+                  <CalendarCheck size={20} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">{stats?.consultas_hoje ?? 0} consultas hoje</p>
+                  <p className="text-xs text-gray-500">agendadas para hoje</p>
                 </div>
               </div>
 

@@ -88,14 +88,13 @@ const PacientesPage = () => {
                 <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Paciente</th>
                 <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Contato / CPF</th>
                 <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">Consultas</th>
-                <th className="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Última Sincronização</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
                 Array(perPage).fill(0).map((_, i) => (
                   <tr key={i} className="animate-pulse">
-                    <td colSpan={4} className="px-8 py-6 h-20 bg-gray-50/20"></td>
+                    <td colSpan={3} className="px-8 py-6 h-20 bg-gray-50/20"></td>
                   </tr>
                 ))
               ) : pacientesFiltrados.map((p) => (
@@ -116,12 +115,6 @@ const PacientesPage = () => {
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-600 border border-blue-100">
                       {p.total_consultas} {p.total_consultas === 1 ? 'consulta' : 'consultas'}
                     </span>
-                  </td>
-                  <td className="px-8 py-6 text-right">
-                    <div className="flex items-center justify-end gap-2 text-sm text-gray-500">
-                      <Calendar size={14} className="text-gray-300" />
-                      {p.ultima_consulta ? new Date(p.ultima_consulta).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}
-                    </div>
                   </td>
                 </tr>
               ))}
