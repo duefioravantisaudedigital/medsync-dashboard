@@ -33,7 +33,6 @@ const Sidebar = () => {
     { icon: <LayoutDashboard size={20} />, label: 'Início', href: '/' },
     { icon: <Users size={20} />, label: 'Pacientes', href: '/pacientes' },
     { icon: <MessageSquare size={20} />, label: 'Mensagens', href: '/mensagens' },
-    { icon: <FileBarChart size={20} />, label: 'Relatórios', href: '/relatorios' },
     { icon: <History size={20} />, label: 'Histórico', href: '/historico' },
   ];
 
@@ -42,7 +41,6 @@ const Sidebar = () => {
   }
 
   const secondaryItems = [
-    { icon: <Settings size={20} />, label: 'Ajustes', href: '/ajustes' },
     { icon: <LifeBuoy size={20} />, label: 'Suporte', href: '/suporte' },
   ];
 
