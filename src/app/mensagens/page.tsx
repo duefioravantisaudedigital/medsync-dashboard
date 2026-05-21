@@ -46,8 +46,8 @@ const MensagensPage = () => {
     setLoading(true);
     try {
       const [consultasResp, statsResp] = await Promise.all([
-        fetch(`${API_BASE_URL}/dashboard/consultas/hoje`, { headers: getAuthHeaders() }),
-        fetch(`${API_BASE_URL}/dashboard/stats`, { headers: getAuthHeaders() })
+        fetch(`${API_BASE_URL}/dashboard/consultas/hoje`, { headers: getAuthHeaders(), cache: 'no-store' }),
+        fetch(`${API_BASE_URL}/dashboard/stats`, { headers: getAuthHeaders(), cache: 'no-store' })
       ]);
 
       if (consultasResp.ok) {
