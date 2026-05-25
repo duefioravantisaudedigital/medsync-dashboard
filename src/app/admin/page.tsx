@@ -49,6 +49,28 @@ export default function AdminPage() {
     }
   }
 
+  async function handleActivateTrial(userId: number) {
+    if (!confirm('Deseja ativar o trial de 7 dias para este médico?')) return;
+
+    setActionId(userId);
+    try {
+      const resp = await fetch(`${API_BASE_URL}/admin/users/${userId}/activate-trial`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      if (resp.ok) {
+        await fetchUsers();
+      } else {
+        const data = await resp.json();
+        alert(data.error || 'Erro ao ativar trial');
+      }
+    } catch (err) {
+      alert('Erro ao ativar trial');
+    } finally {
+      setActionId(null);
+    }
+  }
+
   async function handleRenew(userId: number) {
     if (!confirm('Deseja renovar a licença por +30 dias? (Isso mudará o plano para PRO)')) return;
     
@@ -168,7 +190,17 @@ export default function AdminPage() {
                     </td>
                     <td className="px-8 py-6 text-right">
                       <div className="flex justify-end gap-3">
-                        <button 
+                        {!u.is_active && (
+                          <button
+                            onClick={() => handleActivateTrial(u.id)}
+                            disabled={isProcessing}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 disabled:opacity-50"
+                          >
+                            {isProcessing ? <RefreshCw size={14} className="animate-spin" /> : <Zap size={14} />}
+                            Ativar Trial (7 dias)
+                          </button>
+                        )}
+                        <button
                           onClick={() => handleRenew(u.id)}
                           disabled={isProcessing}
                           className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 disabled:opacity-50"
