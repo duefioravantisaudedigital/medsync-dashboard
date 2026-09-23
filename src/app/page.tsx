@@ -26,6 +26,15 @@ interface DashboardStats {
   subscription_expires_at: string | null;
 }
 
+function capitalizeName(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 export default function Home() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [chartData, setChartData] = useState<any[]>([]);
@@ -72,7 +81,7 @@ export default function Home() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Visão geral</h1>
           <p className="text-gray-500 mt-1">
-            {stats?.nome ? `Dr(a). ${stats.nome}` : 'Dashboard'} · {stats?.crm ? `CRM ${stats.crm}/${stats.uf_crm}` : ''}
+            {stats?.nome ? `Dr(a). ${capitalizeName(stats.nome)}` : 'Dashboard'} · {stats?.crm ? `CRM ${stats.crm}/${stats.uf_crm}` : ''}
           </p>
         </div>
       </div>
