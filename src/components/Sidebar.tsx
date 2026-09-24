@@ -12,7 +12,8 @@ import {
   LifeBuoy,
   Zap,
   LogOut,
-  MessageSquare
+  MessageSquare,
+  CreditCard
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
@@ -34,6 +35,7 @@ const Sidebar = () => {
     { icon: <Users size={20} />, label: 'Pacientes', href: '/pacientes' },
     { icon: <MessageSquare size={20} />, label: 'Mensagens', href: '/mensagens' },
     { icon: <History size={20} />, label: 'Histórico', href: '/historico' },
+    { icon: <CreditCard size={20} />, label: 'Assinatura', href: '/assinatura' },
   ];
 
   if (user?.is_admin) {
@@ -44,9 +46,12 @@ const Sidebar = () => {
     { icon: <LifeBuoy size={20} />, label: 'Suporte', href: '/suporte' },
   ];
 
-  const expirationDate = user?.expires_at 
-    ? new Date(user.expires_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+  const expirationDate = user?.expires_at
+    ? new Date(user.expires_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
     : 'N/A';
+
+  const planoLabel = user?.plan_type === 'trial' ? 'Teste grátis' : 'Plano Pro';
+  const expirado = user?.expires_at ? new Date(user.expires_at) < new Date() : false;
 
   return (
     <div className="w-64 bg-[#064e3b] h-screen flex flex-col text-white p-6 fixed left-0 top-0">
@@ -106,16 +111,18 @@ const Sidebar = () => {
         <div className="mt-8 bg-white/5 border border-white/10 rounded-2xl p-4">
           <div className="flex justify-between items-start mb-2">
             <div>
-              <p className="text-[10px] text-emerald-100/50 uppercase tracking-wider font-bold">Plano Pro - ativo</p>
-              <p className="text-sm font-semibold">Expira {expirationDate}</p>
+              <p className="text-[10px] text-emerald-100/50 uppercase tracking-wider font-bold">
+                {planoLabel} - {expirado ? 'expirado' : 'ativo'}
+              </p>
+              <p className="text-sm font-semibold">{expirado ? 'Expirou' : 'Expira'} {expirationDate}</p>
             </div>
           </div>
-          <div className="w-full bg-white/10 h-1.5 rounded-full mb-4">
-            <div className="bg-emerald-400 h-full w-2/3 rounded-full" />
-          </div>
-          <button className="w-full bg-white text-[#064e3b] py-2 rounded-lg text-xs font-bold hover:bg-emerald-50 transition-colors">
-            Renovar
-          </button>
+          <Link
+            href="/assinatura"
+            className="mt-2 block w-full text-center bg-white text-[#064e3b] py-2 rounded-lg text-xs font-bold hover:bg-emerald-50 transition-colors"
+          >
+            {user?.plan_type === 'trial' || expirado ? 'Assinar' : 'Gerenciar'}
+          </Link>
         </div>
       </div>
     </div>
