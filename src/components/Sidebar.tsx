@@ -1,28 +1,42 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Users, 
-  FileBarChart, 
   History, 
   Settings, 
   LifeBuoy,
-  Zap,
   LogOut,
   MessageSquare,
   CreditCard
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
-import { getUser } from '@/lib/api';
+import { API_BASE_URL, getAuthHeaders, getUser } from '@/lib/api';
 
 const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const user = getUser();
+  const [user, setUser] = useState(getUser);
+
+  // Atualiza os dados do médico (plano e validade) a partir da API, não só do cookie do login
+  useEffect(() => {
+    let cancelado = false;
+    fetch(`${API_BASE_URL}/auth/me`, { headers: getAuthHeaders() })
+      .then((resp) => (resp.ok ? resp.json() : null))
+      .then((data) => {
+        if (!data || cancelado) return;
+        Cookies.set('medsync_user', JSON.stringify(data), { expires: 7 });
+        setUser(data);
+      })
+      .catch(() => {
+        // Sem conexão: mantém o que está no cookie
+      });
+    return () => { cancelado = true; };
+  }, [pathname]);
 
   const handleLogout = () => {
     Cookies.remove('medsync_token');
