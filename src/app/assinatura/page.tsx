@@ -232,7 +232,7 @@ export default function AssinaturaPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-10">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Assinatura</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Planos</h1>
         <p className="text-sm text-gray-500 mt-1">Escolha o plano que faz mais sentido para a sua rotina.</p>
       </div>
 

@@ -11,7 +11,8 @@ import {
   LifeBuoy,
   LogOut,
   MessageSquare,
-  CreditCard
+  CreditCard,
+  Download
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
@@ -49,7 +50,7 @@ const Sidebar = () => {
     { icon: <Users size={20} />, label: 'Pacientes', href: '/pacientes' },
     { icon: <MessageSquare size={20} />, label: 'Mensagens', href: '/mensagens' },
     { icon: <History size={20} />, label: 'Histórico', href: '/historico' },
-    { icon: <CreditCard size={20} />, label: 'Assinatura', href: '/assinatura' },
+    { icon: <CreditCard size={20} />, label: 'Planos', href: '/assinatura' },
   ];
 
   if (user?.is_admin) {
@@ -57,6 +58,7 @@ const Sidebar = () => {
   }
 
   const secondaryItems = [
+    { icon: <Download size={20} />, label: 'Instalação', href: '/instalacao' },
     { icon: <LifeBuoy size={20} />, label: 'Suporte', href: '/suporte' },
   ];
 
