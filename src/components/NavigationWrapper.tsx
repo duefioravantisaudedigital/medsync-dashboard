@@ -5,6 +5,9 @@ import Sidebar from "@/components/Sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
+// Páginas abertas a qualquer visitante, sem login e sem sidebar
+const PUBLIC_PATHS = ["/privacidade"];
+
 export default function NavigationWrapper({
   children,
 }: {
@@ -14,8 +17,15 @@ export default function NavigationWrapper({
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const isPublicPage = PUBLIC_PATHS.includes(pathname);
 
   useEffect(() => {
+    // Página pública: não exige sessão nem redireciona
+    if (isPublicPage) {
+      setIsLoading(false);
+      return;
+    }
+
     // Verifica se o token existe nos cookies
     const token = Cookies.get('medsync_token');
     const isLoginPage = pathname === "/login";
@@ -32,9 +42,14 @@ export default function NavigationWrapper({
     }
 
     setIsLoading(false);
-  }, [pathname, router]);
+  }, [pathname, router, isPublicPage]);
 
   const isLoginPage = pathname === "/login";
+
+  // Página pública: renderiza direto (inclusive no HTML do servidor)
+  if (isPublicPage) {
+    return <>{children}</>;
+  }
 
   // Enquanto verifica a sessão, mostra uma tela branca ou loading simples
   if (isLoading) {
