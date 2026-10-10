@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
+import AvisoAtualizacao from "@/components/AvisoAtualizacao";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
@@ -69,6 +70,7 @@ export default function NavigationWrapper({
   return (
     <div className="flex min-h-screen">
       <Sidebar />
+      <AvisoAtualizacao />
       <main className="flex-1 ml-64 p-8 min-h-screen">
         {children}
       </main>
