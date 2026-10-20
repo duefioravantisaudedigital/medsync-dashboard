@@ -28,6 +28,7 @@ export default function AdminPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionId, setActionId] = useState<number | null>(null);
+  const [renewDays, setRenewDays] = useState<Record<number, number>>({});
   const user = getUser();
 
   useEffect(() => {
@@ -72,16 +73,21 @@ export default function AdminPage() {
   }
 
   async function handleRenew(userId: number) {
-    if (!confirm('Deseja renovar a licença por +30 dias? (Isso mudará o plano para PRO)')) return;
+    const dias = renewDays[userId] ?? 30;
+    if (!confirm(`Deseja renovar a licença por +${dias} dia(s)? (Isso mudará o plano para PRO)`)) return;
     
     setActionId(userId);
     try {
       const resp = await fetch(`${API_BASE_URL}/admin/users/${userId}/renew`, {
         method: 'POST',
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ dias })
       });
       if (resp.ok) {
         await fetchUsers();
+      } else {
+        const data = await resp.json().catch(() => ({}));
+        alert(data.error || 'Erro ao renovar licença');
       }
     } catch (err) {
       alert('Erro ao renovar licença');
@@ -200,13 +206,23 @@ export default function AdminPage() {
                             Ativar Trial (7 dias)
                           </button>
                         )}
+                        <select
+                          value={renewDays[u.id] ?? 30}
+                          onChange={(e) => setRenewDays((prev) => ({ ...prev, [u.id]: Number(e.target.value) }))}
+                          disabled={isProcessing}
+                          className="px-3 py-2.5 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 bg-white disabled:opacity-50"
+                        >
+                          {Array.from({ length: 30 }, (_, i) => i + 1).map((d) => (
+                            <option key={d} value={d}>{d} {d === 1 ? 'dia' : 'dias'}</option>
+                          ))}
+                        </select>
                         <button
                           onClick={() => handleRenew(u.id)}
                           disabled={isProcessing}
                           className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 disabled:opacity-50"
                         >
                           {isProcessing ? <RefreshCw size={14} className="animate-spin" /> : <Zap size={14} />}
-                          Renovar +30 dias
+                          Renovar +{renewDays[u.id] ?? 30} {(renewDays[u.id] ?? 30) === 1 ? 'dia' : 'dias'}
                         </button>
                         
                         <button 
