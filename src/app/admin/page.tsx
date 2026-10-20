@@ -210,10 +210,10 @@ export default function AdminPage() {
                           value={renewDays[u.id] ?? 30}
                           onChange={(e) => setRenewDays((prev) => ({ ...prev, [u.id]: Number(e.target.value) }))}
                           disabled={isProcessing}
-                          className="px-3 py-2.5 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 bg-white disabled:opacity-50"
+                          className="px-3 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 cursor-pointer disabled:opacity-50"
                         >
                           {Array.from({ length: 30 }, (_, i) => i + 1).map((d) => (
-                            <option key={d} value={d}>{d} {d === 1 ? 'dia' : 'dias'}</option>
+                            <option key={d} value={d} className="bg-white text-gray-900">{d} {d === 1 ? 'dia' : 'dias'}</option>
                           ))}
                         </select>
                         <button
@@ -221,7 +221,7 @@ export default function AdminPage() {
                           disabled={isProcessing}
                           className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 disabled:opacity-50"
                         >
-                          {isProcessing ? <RefreshCw size={14} className="animate-spin" /> : <Zap size={14} />}
+                          {isProcessing && <RefreshCw size={14} className="animate-spin" />}
                           Renovar +{renewDays[u.id] ?? 30} {(renewDays[u.id] ?? 30) === 1 ? 'dia' : 'dias'}
                         </button>
                         
